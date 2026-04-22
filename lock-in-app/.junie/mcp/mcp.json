@@ -1,0 +1,11 @@
+{
+    "mcpServers": {
+        "laravel-boost": {
+            "command": "/Users/chab/.config/herd-lite/bin/php",
+            "args": [
+                "/Users/chab/PhpstormProjects/TP_FINAL_WEB_4/example-app/artisan",
+                "boost:mcp"
+            ]
+        }
+    }
+}
