@@ -1,0 +1,312 @@
+/* =========================
+   THEME VARIABLES
+========================= */
+:root {
+    --background: #0b0b0c;
+    --surface: #111112;
+    --surface-low: #151516;
+    --surface-lowest: #0e0e0f;
+
+    --primary: #e5e5e5;
+    --secondary: #9ca3af;
+
+    --outline: #2a2a2c;
+    --outline-variant: #1f1f21;
+
+    --text-main: #ffffff;
+    --text-muted: #6b7280;
+}
+
+/* =========================
+   GLOBAL
+========================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: var(--background);
+    color: var(--text-main);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+}
+
+/* =========================
+   HEADER
+========================= */
+header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 2rem;
+    display: flex;
+    justify-content: space-between;
+    z-index: 50;
+}
+
+header div:first-child {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 900;
+    font-size: 1.8rem;
+    letter-spacing: -1px;
+}
+
+header div:last-child {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--text-muted);
+}
+
+
+
+
+/* =========================
+   MAIN LAYOUT
+========================= */
+main {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    position: relative;
+}
+
+/* =========================
+   BACKGROUND GLOW
+========================= */
+.bg-glow {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.15;
+}
+
+.bg-glow::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 800px;
+    height: 800px;
+    background: radial-gradient(circle, rgba(255,255,255,0.1), transparent);
+    filter: blur(120px);
+}
+
+.bg-glow::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(255,255,255,0.05), transparent);
+    filter: blur(120px);
+}
+
+/* =========================
+   CARD
+========================= */
+.card {
+    width: 100%;
+    max-width: 520px;
+    background: linear-gradient(145deg, #141416, #101011);
+    padding: 3rem;
+    position: relative;
+}
+
+.card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50px;
+    height: 2px;
+    background: var(--primary);
+}
+
+.card::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 2px;
+    height: 50px;
+    background: var(--primary);
+}
+
+/* =========================
+   TYPOGRAPHY
+========================= */
+h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 900;
+    font-size: 3.5rem;
+    letter-spacing: -2px;
+    line-height: 0.9;
+    margin-bottom: 2.5rem;
+}
+
+.label {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+    display: block;
+}
+
+.small-meta {
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    color: var(--text-muted);
+}
+
+/* =========================
+   FORM
+========================= */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+}
+
+/* =========================
+   INPUTS
+========================= */
+input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--outline-variant);
+    padding: 12px 0;
+    color: white;
+    font-weight: 500;
+    transition: all 0.25s ease;
+}
+
+input::placeholder {
+    color: #3f3f46;
+    letter-spacing: 0.05em;
+}
+
+input:focus {
+    outline: none;
+    border-bottom: 1px solid var(--primary);
+}
+
+/* =========================
+   ICON INSIDE INPUT
+========================= */
+.input-icon {
+    position: relative;
+}
+
+.input-icon span {
+    position: absolute;
+    right: 0;
+    top: 12px;
+    font-size: 18px;
+    color: var(--text-muted);
+}
+
+/* =========================
+   NOTICE BLOCK
+========================= */
+.notice {
+    background: var(--surface-lowest);
+    border-left: 2px solid var(--primary);
+    padding: 16px;
+    display: flex;
+    gap: 12px;
+}
+
+.notice p {
+    font-size: 11px;
+    color: var(--text-muted);
+    line-height: 1.5;
+}
+
+.notice strong {
+    color: white;
+}
+
+/* =========================
+   BUTTON
+========================= */
+button {
+    width: 100%;
+    background: #e5e5e5;
+    color: black;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    padding: 18px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+button:hover {
+    background: #cfcfcf;
+}
+
+button:active {
+    transform: scale(0.98);
+}
+
+/* =========================
+   BACK LINK
+========================= */
+.back-link {
+    text-align: center;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--text-muted);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.back-link:hover {
+    color: white;
+}
+
+/* =========================
+   FOOTER
+========================= */
+footer {
+    background: #0e0e0e;
+    padding: 4rem 3rem;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+footer .logo {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 900;
+}
+
+footer p {
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: #555;
+    margin-top: 8px;
+}
+
+footer a {
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: #555;
+    text-decoration: none;
+    margin-left: 2rem;
+}
+
+footer a:hover {
+    color: white;
+}

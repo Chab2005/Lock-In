@@ -1,0 +1,109 @@
+body {
+    color: #e2e2e2;
+    font-family: 'Inter', sans-serif;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* HEADER */
+.topbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.topbar-inner {
+    max-width: 1600px;
+    margin: auto;
+    padding: 24px 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-family: 'Space Grotesk';
+    font-weight: 900;
+    font-size: 28px;
+    color: white;
+}
+
+/* NAV */
+.nav {
+    display: flex;
+    gap: 32px;
+}
+
+.nav a {
+    font-family: 'Space Grotesk';
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    color: #777;
+    text-decoration: none;
+    padding-bottom: 6px;
+    position: relative;
+    display: inline-block;
+    transition: color 0.25s ease;
+}
+
+.nav a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 2px;
+    background: #d6d6d6;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.25s ease, background 0.25s ease;
+}
+
+.nav a:hover {
+    color: #d6d6d6;
+}
+
+.nav a:hover::after {
+    transform: scaleX(1);
+}
+
+.nav a.active {
+    color: white;
+}
+
+.nav a.active::after {
+    transform: scaleX(1);
+    background: white;
+}
+
+/* RIGHT ACTION */
+.top-actions {
+    display: flex;
+    align-items: center;
+}
+
+.icon-btn {
+    background: transparent;
+    border: none;
+    color: #b6b6b6;
+    cursor: pointer;
+    padding: 6px;
+}
+
+.icon-btn:hover {
+    color: white;
+}
+
+.icon-btn .material-symbols-outlined {
+    font-size: 32px;
+}
+
+

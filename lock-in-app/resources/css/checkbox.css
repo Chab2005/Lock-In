@@ -1,0 +1,36 @@
+.checkbox-grid {
+    margin-top: 20px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+
+.checkbox-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: #1b1b1b;
+    padding: 24px;
+    cursor: pointer;
+    border: 1px solid rgba(255,255,255,0.05);
+    transition: all 0.25s ease;
+}
+
+.checkbox-card:hover {
+    background: #222;
+}
+
+.checkbox-card input {
+    display: none;
+}
+
+.checkbox-box {
+    width: 20px;
+    height: 20px;
+    border: 1px solid #777;
+}
+
+.checkbox-card input:checked + .checkbox-box {
+    background: #fff;
+    border-color: #fff;
+}

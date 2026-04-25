@@ -1,0 +1,188 @@
+/* RESET */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #131313;
+    color: #e2e2e2;
+    font-family: 'Inter', sans-serif;
+}
+
+/* MAIN */
+.main {
+    max-width: 1400px;
+    margin: auto;
+    padding: 140px 48px 80px;
+}
+
+/* HERO */
+.hero h1 {
+    font-family: 'Space Grotesk';
+    font-size: 72px;
+    line-height: 0.9;
+    color: white;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+}
+
+.hero p {
+    margin-top: 24px;
+    max-width: 520px;
+    color: #aaa;
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+/* SECTION HEADER */
+.section-header {
+    margin-top: 80px;
+}
+
+.section-header h2 {
+    font-family: 'Space Grotesk';
+    font-size: 14px;
+    letter-spacing: 0.25em;
+    color: #aaa;
+}
+
+.divider {
+    height: 2px;
+    background: white;
+    margin-top: 16px;
+    width: 100%;
+}
+
+/* GRID */
+.grid {
+    margin-top: 48px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+}
+
+/* CARD */
+.card {
+
+    background: #1b1b1b;
+    padding: 32px;
+    min-height: 220px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    border: 3px solid transparent;
+    transition: 0.25s;
+}
+
+.card:hover {
+    background: #222;
+    border-color: rgba(255,255,255,0.1);
+    border-left: 3px solid white;
+}
+
+
+
+/* TOP */
+.card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+/* TITLE */
+.card-title {
+    padding-right: 1rem;
+    line-break: auto;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.card-title h3 {
+    font-family: 'Space Grotesk';
+    font-size: 18px;
+    color: white;
+}
+
+/* ICON */
+.icon {
+    width: 44px;
+    height: 44px;
+    background: #2a2a2a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* BADGE */
+.badge {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: #aaa;
+    background: #2a2a2a;
+    padding: 6px 10px;
+}
+
+/* ALERT BADGE */
+.alert-badge {
+    background: white;
+    color: black;
+    font-weight: 600;
+}
+
+/* BOTTOM */
+.card-bottom {
+    margin-top: 40px;
+}
+
+/* EMAIL */
+.email {
+    font-size: 14px;
+    color: #aaa;
+    margin-bottom: 10px;
+}
+
+/* PASSWORD */
+.password-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.dots {
+    font-family: 'Space Grotesk';
+    letter-spacing: 0.2em;
+    color: white;
+}
+
+/* COPY ICON */
+.copy {
+    color: #777;
+    cursor: pointer;
+    opacity: 0;
+    transition: 0.2s;
+}
+
+.card:hover .copy {
+    opacity: 1;
+}
+
+.copy:hover {
+    color: white;
+}
+
+/* WARNING */
+.warning {
+    margin-top: 16px;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: #777;
+
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}

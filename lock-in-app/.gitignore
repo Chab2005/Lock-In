@@ -32,9 +32,6 @@ yarn-error.log
 # =========================
 /vendor/
 /node_modules/
-/public/build
-/public/hot
-/storage/*.key
 /storage/app/*
 !/storage/app/public
 /storage/framework/cache/*
@@ -51,7 +48,6 @@ yarn-error.log
 # =========================
 # Environment & Secrets
 # =========================
-.env
 .env.*
 !.env.example
 
@@ -74,7 +70,6 @@ bun.lockb
 # =========================
 /bootstrap/cache/*
 !/bootstrap/cache/.gitignore
-.phpunit.result.cache
 .php_cs.cache
 .cache/
 .tmp/
@@ -93,7 +88,7 @@ temp/
 # OS Files
 # =========================
 Thumbs.db
-.DS_Store
+
 
 # =========================
 # Testing
@@ -131,8 +126,4 @@ docker-data/
 # Optional (uncomment if needed)
 # =========================
 # Ignore database
-# /database/*.sqlite
-
-# Ignore public storage symlink (recreated by artisan)
-# public/storage
-
+/database/*.sqlite
