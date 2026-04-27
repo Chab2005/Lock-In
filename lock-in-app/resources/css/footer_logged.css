@@ -14,9 +14,8 @@ main {
 }
 
 .footer {
-    background: rgba(0,0,0) ;
-
+    background: var(--footer-header-bg) ;
     padding: 40px;
     text-align: center;
-    border-top: 1px solid #222;
+    border-top: 1px solid var(--color-border);
 }

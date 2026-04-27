@@ -1,9 +1,12 @@
 <div class="settings-section">
     <div class="danger-zone">
         <div class="danger-title">
-            ⚠️ ZONE DE DANGER
+            <span class="material-symbols-outlined">
+                warning
+            </span>
+            DANGER ZONE
         </div>
-        <p>Cette action est irréversible. La suppression des données de votre coffre effacera définitivement tous vos mots de passe, notes sécurisées et clés stockées.</p>
-        <button class="btn-danger">SUPPRIMER LES DONNÉES DU COFFRE</button>
+        <p>This action is irreversible. Deleting your vault data will permanently erase all your passwords, secure notes, and stored keys.</p>
+        <button class="btn-danger">DELETE VAULT DATA</button>
     </div>
 </div>

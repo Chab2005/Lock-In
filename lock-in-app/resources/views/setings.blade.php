@@ -2,6 +2,7 @@
 
 @push('styles')
     @vite([
+        'resources/css/root.css',
         'resources/css/checkbox.css',
         'resources/css/settings.css',
         'resources/css/header_logged.css',

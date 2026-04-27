@@ -6,8 +6,8 @@
 }
 
 body {
-    background: #131313;
-    color: #e2e2e2;
+    background: var(--color-bg);
+    color: var(--color-text-primary);
     font-family: 'Inter', sans-serif;
 }
 
@@ -23,7 +23,7 @@ body {
     font-family: 'Space Grotesk';
     font-size: 72px;
     line-height: 0.9;
-    color: white;
+    color: var(--color-text-primary);
     letter-spacing: -0.02em;
     text-transform: uppercase;
 }
@@ -31,7 +31,7 @@ body {
 .hero p {
     margin-top: 24px;
     max-width: 520px;
-    color: #aaa;
+    color: var(--color-text-secondary);
     font-size: 16px;
     line-height: 1.6;
 }
@@ -45,7 +45,7 @@ body {
     font-family: 'Space Grotesk';
     font-size: 14px;
     letter-spacing: 0.25em;
-    color: #aaa;
+    color: var(--color-text-secondary);
 }
 
 .divider {
@@ -66,7 +66,7 @@ body {
 /* CARD */
 .card {
 
-    background: #1b1b1b;
+    background: var(--color-surface);
     padding: 32px;
     min-height: 220px;
 
@@ -79,9 +79,9 @@ body {
 }
 
 .card:hover {
-    background: #222;
-    border-color: rgba(255,255,255,0.1);
-    border-left: 3px solid white;
+    background: var(--color-surface-hover);
+    border-color: var(--color-border);
+    border-left: 3px solid var(--color-text-primary);
 }
 
 
@@ -105,14 +105,14 @@ body {
 .card-title h3 {
     font-family: 'Space Grotesk';
     font-size: 18px;
-    color: white;
+    color: var(--color-text-primary);
 }
 
 /* ICON */
 .icon {
     width: 44px;
     height: 44px;
-    background: #2a2a2a;
+    background: var(--color-surface-hover);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -122,15 +122,15 @@ body {
 .badge {
     font-size: 10px;
     letter-spacing: 0.2em;
-    color: #aaa;
-    background: #2a2a2a;
+    color: var(--color-text-secondary);
+    background: var(--color-surface-hover);
     padding: 6px 10px;
 }
 
 /* ALERT BADGE */
 .alert-badge {
-    background: white;
-    color: black;
+    background: var(--color-text-primary);
+    color: var(--color-bg);
     font-weight: 600;
 }
 
@@ -142,7 +142,7 @@ body {
 /* EMAIL */
 .email {
     font-size: 14px;
-    color: #aaa;
+    color: var(--color-text-secondary);
     margin-bottom: 10px;
 }
 
@@ -156,12 +156,12 @@ body {
 .dots {
     font-family: 'Space Grotesk';
     letter-spacing: 0.2em;
-    color: white;
+    color: var(--color-text-primary);
 }
 
 /* COPY ICON */
 .copy {
-    color: #777;
+    color: var(--color-text-secondary);
     cursor: pointer;
     opacity: 0;
     transition: 0.2s;
@@ -172,7 +172,7 @@ body {
 }
 
 .copy:hover {
-    color: white;
+    color: var(--color-text-primary);
 }
 
 /* WARNING */
@@ -180,7 +180,7 @@ body {
     margin-top: 16px;
     font-size: 11px;
     letter-spacing: 0.15em;
-    color: #777;
+    color: var(--color-text-secondary);
 
     display: flex;
     align-items: center;

@@ -7,7 +7,7 @@
             <h3>Google Workspace</h3>
         </div>
 
-        <span class="badge">SECURED</span>
+
     </div>
 
     <div class="card-bottom">

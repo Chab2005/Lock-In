@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
 use Illuminate\Support\Facades\Auth;
@@ -12,22 +13,22 @@ Route::get('/', function() {
     }
 })->name('/');
 
-Route::get('/login', function() {return view('login');})->name('login');
+Route::get('/login', function() {return view('login');})->middleware('guest')->name('login');
 
-Route::get('/register', function() {
-    if (Auth::check()) {
-        return view('register');
-    } else {
-        return redirect('/');
-    }
-})->name('register');
+Route::get('/register', function() {return view('register');})->middleware('guest')->name('register');
+
+Route::post('/login', [AuthController::class, 'login']);
+
+Route::post('/register', [AuthController::class, 'register']);
+
+Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
 
 Route::get('/dashboard', function() {
     return view('dashboard');
-})->name('dashboard');
+})->middleware('auth')->name('dashboard');
 
-Route::get('/generator', function() {return view('generator');})->name('generator');
+Route::get('/generator', function() {return view('generator');})->middleware('auth')->name('generator');
 
-Route::get('/setings', function() {return view('setings');})->name('setings');
+Route::get('/setings', function() {return view('setings');})->middleware('auth')->name('setings');
 
 require __DIR__.'/settings.php';

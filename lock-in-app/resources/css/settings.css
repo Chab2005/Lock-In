@@ -1,15 +1,8 @@
+
+
 /* settings.css - Styles spécifiques à la page des Paramètres */
 
 .settings-page {
-    /* Forcer les variables de thème sombre localement */
-    --color-bg: #111111;
-    --color-surface: #1a1a1a;
-    --color-surface-hover: #222222;
-    --color-border: #2a2a2a;
-    --color-text-primary: #ffffff;
-    --color-text-secondary: #999999;
-    --color-danger: #ff4444;
-
     background-color: var(--color-bg);
     color: var(--color-text-primary);
     padding-top: 150px;
@@ -152,7 +145,7 @@
 }
 
 .btn-action:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: var(--color-surface-hover);
 }
 
 .btn-filled {
@@ -162,7 +155,7 @@
 }
 
 .btn-filled:hover {
-    background-color: #e0e0e0;
+    background-color: var(--color-text-secondary);
 }
 
 .btn-action-text {
@@ -195,7 +188,7 @@
 }
 
 .activeBadge {
-    background-color: #333;
+    background-color: var(--color-surface);
     color: var(--color-text-primary);
     padding: 0.3rem 0.5rem;
     font-size: 0.7rem;
@@ -296,5 +289,5 @@
 .btn-danger:hover {
     background-color: var(--color-danger);
     border-color: var(--color-danger);
-    color: #fff;
+    color: var(--color-bg);
 }
