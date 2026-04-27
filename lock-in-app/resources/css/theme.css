@@ -1,0 +1,61 @@
+/* theme.css - Global color mode system with dark/light/system support */
+
+:root {
+    /* Light Mode Colors (Default) */
+    --color-bg: #ffffff;
+    --color-surface: #f5f5f5;
+    --color-surface-elevated: #e8e8e8;
+    --color-surface-hover: #ececec;
+    --color-text-primary: #000000;
+    --color-text-secondary: #666666;
+    --color-border: rgba(0, 0, 0, 0.1);
+    --color-accent: #000000;
+    --color-danger: #cc0000;
+
+    /* Typography */
+    --font-main: 'Space Grotesk', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+
+    /* Spacing & Borders */
+    --radius: 0px;
+    --shadow: none;
+}
+
+/* Dark Mode Colors */
+.dark {
+    --color-bg: #000000;
+    --color-surface: #0a0a0a;
+    --color-surface-elevated: #141414;
+    --color-surface-hover: #1a1a1a;
+    --color-text-primary: #ffffff;
+    --color-text-secondary: #a1a1aa;
+    --color-border: rgba(255, 255, 255, 0.05);
+    --color-accent: #ffffff;
+    --color-danger: #ff4444;
+}
+
+/* System Mode Support - apply dark colors when OS prefers dark and no explicit light mode */
+@media (prefers-color-scheme: dark) {
+    :root:not(.light) {
+        --color-bg: #000000;
+        --color-surface: #0a0a0a;
+        --color-surface-elevated: #141414;
+        --color-surface-hover: #1a1a1a;
+        --color-text-primary: #ffffff;
+        --color-text-secondary: #a1a1aa;
+        --color-border: rgba(255, 255, 255, 0.05);
+        --color-accent: #ffffff;
+        --color-danger: #ff4444;
+    }
+}
+
+/* Smooth transitions when theme changes */
+body {
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+* {
+    transition-property: background-color, color, border-color;
+    transition-duration: 0.2s;
+    transition-timing-function: ease;
+}
