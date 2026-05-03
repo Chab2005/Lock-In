@@ -7,24 +7,31 @@
         </div>
 
         <div class="analysis-block">
-            <label>SECURITY LEVEL</label>
+            <label>PASSWORD LENGTH</label>
             <div class="value-row">
-                <span class="big">OPTIMAL</span>
+                <span class="big" id="analysisLength">—</span>
+                <span class="unit">characters</span>
             </div>
         </div>
 
         <div class="analysis-block">
-            <label>RAW ENTROPY</label>
+            <label>CHARACTER POOLS</label>
             <div class="value-row">
-                <span class="big">128 <small>bits</small></span>
+                <span class="big" id="analysisPools">—</span>
             </div>
-
         </div>
 
         <div class="analysis-block">
-            <label>RESISTANCE</label>
+            <label>ESTIMATED COMBINATIONS</label>
             <div class="value-row">
-                <span class="big">4.5M <small>years</small></span>
+                <span class="big" id="analysisCombinations">—</span>
+            </div>
+        </div>
+
+        <div class="analysis-block">
+            <label>CRACK RESISTANCE</label>
+            <div class="value-row">
+                <span class="big" id="analysisCrackTime">—</span>
             </div>
         </div>
 

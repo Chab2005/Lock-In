@@ -61,6 +61,12 @@ body {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 32px;
+    align-content: start;
+}
+
+#vaultGrid {
+    min-height: 300px;
+    align-content: start;
 }
 
 /* CARD */
@@ -68,7 +74,8 @@ body {
 
     background: var(--color-surface);
     padding: 32px;
-    min-height: 220px;
+    height: 220px;
+    overflow: hidden;
 
     display: flex;
     flex-direction: column;

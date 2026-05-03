@@ -1,13 +1,22 @@
 <div class="card">
     <div class="row">
-        <label>ENTROPY LENGTH</label>
-        <span class="value" id="rangeValue">32</span>
+        <label>PASSWORD STRENGTH</label>
+        <span class="strength-badge" id="strengthBadge">Not Generated</span>
     </div>
 
-    <input id="entropyRange" class="slider" type="range" min="8" max="128" value="32">
+    <div class="strength-bar">
+        <div class="strength-fill" id="strengthFill"></div>
+    </div>
 
-    <div class="range-legend">
-        <span>8</span>
-        <span>128</span>
+    <div class="entropy-info">
+        <div class="entropy-item">
+            <span class="label">ENTROPY</span>
+            <span class="value" id="entropyValue">0</span>
+            <span class="unit">bits</span>
+        </div>
+        <div class="entropy-item">
+            <span class="label">COMBINATIONS</span>
+            <span class="value" id="combinationsValue">0</span>
+        </div>
     </div>
 </div>

@@ -1,0 +1,188 @@
+/* ===== VAULT UNLOCK MODAL ===== */
+
+.vault-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9000;
+}
+
+.vault-modal-inner {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    padding: 48px;
+    width: 100%;
+    max-width: 480px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.vault-modal-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.vault-modal-header .material-symbols-outlined {
+    font-size: 32px;
+    color: var(--color-text-primary);
+}
+
+.vault-modal-header h2 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: var(--color-text-primary);
+}
+
+.vault-modal-subtitle {
+    font-size: 14px;
+    color: var(--color-text-secondary);
+    line-height: 1.5;
+}
+
+.vault-modal-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.vault-modal-field label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+}
+
+.vault-modal-field input {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--color-border);
+    padding: 10px 0;
+    color: var(--color-text-primary);
+    font-size: 16px;
+    width: 100%;
+    transition: border-color 0.2s;
+}
+
+.vault-modal-field input:focus {
+    outline: none;
+    border-bottom-color: var(--color-text-primary);
+}
+
+.vault-modal-error {
+    font-size: 13px;
+    color: var(--color-danger);
+    margin: 0;
+}
+
+/* Same visual as btn-primary from addPassword.css */
+.vault-unlock-submit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: var(--color-text-primary);
+    color: var(--color-bg);
+    padding: 18px 28px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: 100%;
+}
+
+.vault-unlock-submit:hover {
+    background: var(--color-text-secondary);
+    transform: translateY(-2px);
+}
+
+.vault-unlock-submit:active {
+    transform: scale(0.95);
+}
+
+/* ===== VAULT CARD DELETE BUTTON ===== */
+
+.vault-delete-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: var(--color-text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    opacity: 0;
+    transition: opacity 0.2s, color 0.2s;
+}
+
+.card:hover .vault-delete-btn {
+    opacity: 1;
+}
+
+.vault-delete-btn:hover {
+    color: var(--color-danger);
+}
+
+/* ===== VAULT EMPTY MESSAGE ===== */
+
+.vault-empty-msg {
+    grid-column: 1 / -1;
+    color: var(--color-text-secondary);
+    font-size: 14px;
+    padding: 48px 0;
+}
+
+.vault-empty-msg a {
+    color: var(--color-text-primary);
+    font-weight: 700;
+    text-decoration: underline;
+}
+
+/* ===== TOAST NOTIFICATIONS (same as addPassword.css) ===== */
+
+.toast {
+    position: fixed;
+    bottom: 32px;
+    right: 32px;
+    padding: 16px 24px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    color: var(--color-text-primary);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    z-index: 9999;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.3s ease;
+    pointer-events: none;
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: all;
+}
+
+.toast-success {
+    border-left: 4px solid #4cd137;
+}
+
+.toast-error {
+    border-left: 4px solid #ff3d3d;
+}
+
+.toast-info {
+    border-left: 4px solid #1e90ff;
+}
