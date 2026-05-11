@@ -107,6 +107,95 @@ class VaultTest extends TestCase
         $response->assertUnauthorized();
     }
 
+    public function test_update_vault_entry(): void
+    {
+        $user = User::factory()->create();
+        $entry = VaultEntry::factory()->create(['user_id' => $user->id]);
+
+        $this->actingAs($user);
+
+        $response = $this->putJson("/vault/entries/{$entry->id}", [
+            'nickname' => 'Updated Nickname',
+            'website' => 'https://updated.example.com',
+            'email_hint' => 'new@example.com',
+            'notes' => 'Some private note.',
+        ]);
+
+        $response->assertOk()->assertJson(['success' => true]);
+
+        $this->assertDatabaseHas('vault_entries', [
+            'id' => $entry->id,
+            'nickname' => 'Updated Nickname',
+            'website' => 'https://updated.example.com',
+            'email_hint' => 'new@example.com',
+            'notes' => 'Some private note.',
+        ]);
+    }
+
+    public function test_update_vault_entry_with_new_password(): void
+    {
+        $user = User::factory()->create();
+        $entry = VaultEntry::factory()->create(['user_id' => $user->id]);
+        $originalIv = $entry->iv;
+
+        $this->actingAs($user);
+
+        $response = $this->putJson("/vault/entries/{$entry->id}", [
+            'nickname' => 'Same',
+            'encrypted_password' => base64_encode('new-ciphertext'),
+            'iv' => base64_encode('newivbytes'),
+        ]);
+
+        $response->assertOk()->assertJson(['success' => true]);
+
+        $entry->refresh();
+        $this->assertNotEquals($originalIv, $entry->iv);
+        $this->assertEquals(base64_encode('newivbytes'), $entry->iv);
+    }
+
+    public function test_update_without_password_keeps_existing_ciphertext(): void
+    {
+        $user = User::factory()->create();
+        $entry = VaultEntry::factory()->create(['user_id' => $user->id]);
+        $originalPassword = $entry->encrypted_password;
+        $originalIv = $entry->iv;
+
+        $this->actingAs($user);
+
+        // Send only one of the two required fields — server must keep existing ciphertext
+        $response = $this->putJson("/vault/entries/{$entry->id}", [
+            'nickname' => 'New Name',
+            'encrypted_password' => base64_encode('partial-update'),
+            // 'iv' intentionally omitted
+        ]);
+
+        $response->assertOk();
+
+        $entry->refresh();
+        $this->assertEquals($originalPassword, $entry->encrypted_password);
+        $this->assertEquals($originalIv, $entry->iv);
+    }
+
+    public function test_cannot_update_another_users_entry(): void
+    {
+        $owner = User::factory()->create();
+        $attacker = User::factory()->create();
+        $entry = VaultEntry::factory()->create(['user_id' => $owner->id]);
+
+        $this->actingAs($attacker);
+
+        $response = $this->putJson("/vault/entries/{$entry->id}", [
+            'nickname' => 'Hacked',
+        ]);
+
+        $response->assertForbidden();
+
+        $this->assertDatabaseMissing('vault_entries', [
+            'id' => $entry->id,
+            'nickname' => 'Hacked',
+        ]);
+    }
+
     public function test_delete_vault_entry(): void
     {
         $user = User::factory()->create();

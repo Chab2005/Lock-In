@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Fillable(['user_id', 'website', 'nickname', 'email_hint', 'icon', 'encrypted_password', 'iv'])]
+#[Fillable(['user_id', 'website', 'nickname', 'email_hint', 'icon', 'encrypted_password', 'iv', 'notes'])]
 class VaultEntry extends Model
 {
     /** @use HasFactory<VaultEntryFactory> */

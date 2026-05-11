@@ -4,7 +4,6 @@ namespace Tests\Feature\Auth;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Inertia\Testing\AssertableInertia as Assert;
 use Laravel\Fortify\Features;
 use Tests\TestCase;
 
@@ -28,11 +27,6 @@ class TwoFactorChallengeTest extends TestCase
 
     public function test_two_factor_challenge_can_be_rendered(): void
     {
-        Features::twoFactorAuthentication([
-            'confirm' => true,
-            'confirmPassword' => true,
-        ]);
-
         $user = User::factory()->create();
 
         $user->forceFill([
@@ -41,15 +35,14 @@ class TwoFactorChallengeTest extends TestCase
             'two_factor_confirmed_at' => now(),
         ])->save();
 
-        $this->post(route('login'), [
+        // Login triggers 2FA redirect and stores login.id in session
+        $this->post('/login', [
             'email' => $user->email,
             'password' => 'password',
         ]);
 
         $this->get(route('two-factor.login'))
             ->assertOk()
-            ->assertInertia(fn (Assert $page) => $page
-                ->component('auth/two-factor-challenge'),
-            );
+            ->assertViewIs('auth.two-factor-challenge');
     }
 }

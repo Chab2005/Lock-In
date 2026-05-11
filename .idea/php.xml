@@ -257,6 +257,8 @@
       <path value="$PROJECT_DIR$/lock-in-app/vendor/tijsverkoyen/css-to-inline-styles" />
       <path value="$PROJECT_DIR$/lock-in-app/vendor/vlucas/phpdotenv" />
       <path value="$PROJECT_DIR$/lock-in-app/vendor/voku/portable-ascii" />
+      <path value="$PROJECT_DIR$/lock-in-app/vendor/laragear/meta-model" />
+      <path value="$PROJECT_DIR$/lock-in-app/vendor/laragear/webauthn" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="8.3">

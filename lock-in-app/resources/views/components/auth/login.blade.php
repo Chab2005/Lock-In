@@ -14,6 +14,14 @@
             <input type="password" name="password" id="password" placeholder="••••••••••••" required>
         </div>
 
+        <div style="display: flex; justify-content: flex-end; margin-top: -8px; margin-bottom: 8px;">
+            <a href="/forgot-password"
+               style="font-size: 12px; color: var(--color-text-secondary);
+                      text-decoration: underline; letter-spacing: 0.05em;">
+                Forgot password?
+            </a>
+        </div>
+
         <button type="submit" class="btn-primary">
             SIGN IN
             <span class="material-symbols-outlined">arrow_forward</span>
@@ -25,8 +33,16 @@
     </div>
 
     <div class="social-auth">
-        <button class="btn-outline">
-            <span class="material-symbols-outlined">key</span> Security Key
+        <button type="button" class="btn-outline" id="passkeyLoginBtn"
+                onclick="PasskeyLogin.login()">
+            <span class="material-symbols-outlined">fingerprint</span> Sign in with Passkey
         </button>
     </div>
+
+    <p id="passkeyLoginError"
+       style="font-size:12px; color:#ff3d3d; text-align:center; margin-top:8px; display:none;"></p>
 </main>
+
+@push('scripts')
+    @vite(['resources/js/webauthn-login.ts'])
+@endpush

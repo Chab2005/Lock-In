@@ -25,6 +25,7 @@ class VaultEntryFactory extends Factory
             'email_hint' => fake()->safeEmail(),
             'encrypted_password' => base64_encode(fake()->sha256()),
             'iv' => base64_encode(random_bytes(12)),
+            'notes' => null,
         ];
     }
 }

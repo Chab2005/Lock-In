@@ -25,7 +25,8 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->name(),
+            'first_name' => fake()->firstName(),
+            'last_name' => fake()->lastName(),
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
@@ -33,6 +34,10 @@ class UserFactory extends Factory
             'two_factor_secret' => null,
             'two_factor_recovery_codes' => null,
             'two_factor_confirmed_at' => null,
+            // Explicit false so tests that don't test the MFA flow are not
+            // accidentally routed through the OTP challenge. Use withEmailOtp()
+            // or withTwoFactor() when a test needs a specific MFA state.
+            'is_2fa_email_enabled' => false,
         ];
     }
 
@@ -47,7 +52,19 @@ class UserFactory extends Factory
     }
 
     /**
-     * Indicate that the model has two-factor authentication configured.
+     * Indicate that email OTP is enabled for this user.
+     */
+    public function withEmailOtp(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'is_2fa_email_enabled' => true,
+        ]);
+    }
+
+    /**
+     * Indicate that the model has TOTP (authenticator app) configured.
+     * Email OTP is left at its factory default (false) because TOTP is
+     * the active method; use ->withEmailOtp() in addition when needed.
      */
     public function withTwoFactor(): static
     {

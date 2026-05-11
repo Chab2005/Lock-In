@@ -39,10 +39,12 @@
                 <div class="grid-left">
                     <x-settings.authentifications/>
                     <x-settings.passkey/>
+                    <x-settings.sessions/>
                 </div>
 
                 <div class="grid-right">
                     <x-settings.colorMode/>
+                    <x-settings.password/>
                     <x-settings.deleteAccount/>
                 </div>
 

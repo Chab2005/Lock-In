@@ -3,14 +3,16 @@
 namespace App\Providers;
 
 use App\Actions\Fortify\CreateNewUser;
+use App\Actions\Fortify\DisableTwoFactorAuthentication;
 use App\Actions\Fortify\ResetUserPassword;
+use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
-use Laravel\Fortify\Features;
 use Laravel\Fortify\Fortify;
 
 class FortifyServiceProvider extends ServiceProvider
@@ -30,6 +32,7 @@ class FortifyServiceProvider extends ServiceProvider
     {
         $this->configureActions();
         $this->configureViews();
+        $this->configureNotifications();
         $this->configureRateLimiting();
     }
 
@@ -40,6 +43,13 @@ class FortifyServiceProvider extends ServiceProvider
     {
         Fortify::resetUserPasswordsUsing(ResetUserPassword::class);
         Fortify::createUsersUsing(CreateNewUser::class);
+
+        // Override Fortify's default disable-TOTP action so the server blocks
+        // removing the last active MFA method.
+        $this->app->bind(
+            \Laravel\Fortify\Actions\DisableTwoFactorAuthentication::class,
+            DisableTwoFactorAuthentication::class,
+        );
     }
 
     /**
@@ -47,30 +57,40 @@ class FortifyServiceProvider extends ServiceProvider
      */
     private function configureViews(): void
     {
-        Fortify::loginView(fn (Request $request) => Inertia::render('auth/login', [
-            'canResetPassword' => Features::enabled(Features::resetPasswords()),
-            'canRegister' => Features::enabled(Features::registration()),
+        // Login and register are handled by custom Blade routes in web.php
+
+        // 2FA challenge during login: Blade view
+        Fortify::twoFactorChallengeView(fn () => view('auth.two-factor-challenge'));
+
+        // Password reset: Blade views
+        Fortify::requestPasswordResetLinkView(fn (Request $request) => view('auth.forgot-password', [
             'status' => $request->session()->get('status'),
         ]));
 
-        Fortify::resetPasswordView(fn (Request $request) => Inertia::render('auth/reset-password', [
-            'email' => $request->email,
+        Fortify::resetPasswordView(fn (Request $request) => view('auth.reset-password', [
+            'email' => $request->query('email'),
             'token' => $request->route('token'),
         ]));
 
-        Fortify::requestPasswordResetLinkView(fn (Request $request) => Inertia::render('auth/forgot-password', [
+        Fortify::verifyEmailView(fn (Request $request) => view('auth.verify-email', [
             'status' => $request->session()->get('status'),
+            'email' => $request->user()?->email,
         ]));
-
-        Fortify::verifyEmailView(fn (Request $request) => Inertia::render('auth/verify-email', [
-            'status' => $request->session()->get('status'),
-        ]));
-
-        Fortify::registerView(fn () => Inertia::render('auth/register'));
-
-        Fortify::twoFactorChallengeView(fn () => Inertia::render('auth/two-factor-challenge'));
 
         Fortify::confirmPasswordView(fn () => Inertia::render('auth/confirm-password'));
+    }
+
+    private function configureNotifications(): void
+    {
+        VerifyEmail::toMailUsing(function (object $notifiable, string $url): MailMessage {
+            return (new MailMessage)
+                ->subject('Verify your LOCK IN email address')
+                ->greeting('Welcome to LOCK IN, '.$notifiable->first_name.'!')
+                ->line('Click the button below to verify your email address.')
+                ->action('Verify Email Address', $url)
+                ->line('This link expires in 60 minutes.')
+                ->line('If you did not create a LOCK IN account, no action is required.');
+        });
     }
 
     /**

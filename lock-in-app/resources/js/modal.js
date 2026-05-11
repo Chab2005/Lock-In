@@ -25,19 +25,6 @@ const ModalSystem = {
 window.ModalSystem = ModalSystem;
 
 document.addEventListener('DOMContentLoaded', () => {
-    // ESC closes all app modals
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') ModalSystem.closeAll();
-    });
-
-    // Click on the modal backdrop (the .app-modal element itself) closes it
-    document.addEventListener('click', (e) => {
-        if (e.target.classList.contains('app-modal')) {
-            const id = e.target.id.replace('modal-', '');
-            ModalSystem.close(id);
-        }
-    });
-
     // Close button delegation
     document.addEventListener('click', (e) => {
         const btn = e.target.closest('[data-close-modal]');

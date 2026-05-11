@@ -5,10 +5,18 @@
     <form class="auth-form" method="POST" action="{{ route('register') }}">
         @csrf
 
-        <!-- NAME -->
+        <!-- FIRST NAME -->
         <div class="form-group">
-            <label for="name">NAME</label>
-            <input type="text" name="name" id="name" placeholder="Your name" required>
+            <label for="first_name">FIRST NAME</label>
+            <input type="text" name="first_name" id="first_name" placeholder="John" required
+                   value="{{ old('first_name') }}">
+        </div>
+
+        <!-- LAST NAME -->
+        <div class="form-group">
+            <label for="last_name">LAST NAME</label>
+            <input type="text" name="last_name" id="last_name" placeholder="Doe" required
+                   value="{{ old('last_name') }}">
         </div>
 
         <!-- EMAIL -->

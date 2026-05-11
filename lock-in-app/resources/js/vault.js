@@ -1,5 +1,45 @@
 // ===== HELPERS =====
 
+/**
+ * Opens the delete-confirm modal and resolves true if the user confirms,
+ * false if they cancel. Falls back to window.confirm on older browsers.
+ */
+function confirmDelete(name) {
+    return new Promise((resolve) => {
+        const modal = window.ModalSystem;
+        if (!modal) { resolve(window.confirm('Delete this vault entry?')); return; }
+
+        const nameEl = document.getElementById('deleteConfirmName');
+        const confirmBtn = document.getElementById('deleteConfirmBtn');
+        if (!nameEl || !confirmBtn) { resolve(window.confirm('Delete this vault entry?')); return; }
+
+        nameEl.textContent = name || 'this entry';
+
+        const onConfirm = () => {
+            cleanup();
+            modal.close('delete-confirm');
+            resolve(true);
+        };
+        const onCancel = () => {
+            cleanup();
+            resolve(false);
+        };
+        const cleanup = () => {
+            confirmBtn.removeEventListener('click', onConfirm);
+            document.getElementById('modal-delete-confirm')
+                ?.querySelector('[data-close-modal]')
+                ?.removeEventListener('click', onCancel);
+        };
+
+        confirmBtn.addEventListener('click', onConfirm);
+        document.getElementById('modal-delete-confirm')
+            ?.querySelector('[data-close-modal]')
+            ?.addEventListener('click', onCancel);
+
+        modal.open('delete-confirm');
+    });
+}
+
 function b64Encode(buffer) {
     return btoa(String.fromCharCode(...new Uint8Array(buffer)));
 }
@@ -348,7 +388,10 @@ class VaultDashboard {
         const id = btn.dataset.id;
         if (!id) return;
 
-        if (!confirm('Delete this vault entry?')) return;
+        const card = btn.closest('.vault-card');
+        const name = card?.querySelector('.card-title')?.textContent?.trim() || '';
+
+        if (!await confirmDelete(name)) return;
 
         try {
             const res = await fetch(`/vault/entries/${id}`, {
@@ -364,7 +407,6 @@ class VaultDashboard {
                 return;
             }
 
-            const card = btn.closest('.vault-card');
             if (card) card.remove();
 
             vaultToast('Entry deleted', 'info');
@@ -394,15 +436,118 @@ class VaultDashboard {
         }
         if (revealBtn) revealBtn.textContent = 'visibility';
 
+        const notes = card.dataset.notes || '';
+        const notesEl = document.getElementById('detailNotes');
+        const notesField = document.getElementById('detailNotesField');
+        if (notesEl) notesEl.textContent = notes || '—';
+        if (notesField) notesField.style.display = notes ? '' : 'none';
+
         window.ModalSystem?.open('card-detail');
+    }
+
+    async _handleShare() {
+        if (!this.#activeCard) return;
+        await this.#modal.demand();
+
+        const recipientEmail = document.getElementById('shareRecipientEmail')?.value.trim();
+        const errEl = document.getElementById('shareError');
+        if (errEl) errEl.style.display = 'none';
+
+        if (!recipientEmail) {
+            if (errEl) { errEl.textContent = 'Enter recipient email.'; errEl.style.display = ''; }
+            return;
+        }
+
+        const submitBtn = document.getElementById('submitShareBtn');
+        if (submitBtn) submitBtn.disabled = true;
+
+        try {
+            // 1. Decrypt original entry
+            const plaintext = await this.#crypto.decrypt(
+                this.#activeCard.dataset.encrypted,
+                this.#activeCard.dataset.iv,
+            );
+
+            // 2. Generate random 256-bit share key
+            const shareKeyBytes = crypto.getRandomValues(new Uint8Array(32));
+            const shareKeyB64 = btoa(String.fromCharCode(...shareKeyBytes));
+
+            // 3. Import as raw AES-GCM key
+            const aesKey = await crypto.subtle.importKey(
+                'raw', shareKeyBytes, { name: 'AES-GCM' }, false, ['encrypt'],
+            );
+
+            // 4. Encrypt plaintext with share key
+            const iv = crypto.getRandomValues(new Uint8Array(12));
+            const ciphertextBuf = await crypto.subtle.encrypt(
+                { name: 'AES-GCM', iv }, aesKey, new TextEncoder().encode(plaintext),
+            );
+            const ciphertextB64 = btoa(String.fromCharCode(...new Uint8Array(ciphertextBuf)));
+            const ivB64 = btoa(String.fromCharCode(...iv));
+
+            // 5. SHA-256 hash of share key (server stores only the hash)
+            const hashBuf = await crypto.subtle.digest('SHA-256', shareKeyBytes);
+            const hashHex = Array.from(new Uint8Array(hashBuf))
+                .map((b) => b.toString(16).padStart(2, '0'))
+                .join('');
+
+            // 6. POST to server
+            const label = this.#activeCard.dataset.nickname
+                || this.#activeCard.dataset.website
+                || 'Shared Entry';
+
+            const res = await fetch('/share/entries', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': getCsrfToken(),
+                    Accept: 'application/json',
+                },
+                body: JSON.stringify({
+                    recipient_email: recipientEmail,
+                    label,
+                    encrypted_payload: ciphertextB64,
+                    iv: ivB64,
+                    share_token_hash: hashHex,
+                    share_key: shareKeyB64,
+                }),
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                const msg = data.errors?.recipient_email?.[0] ?? data.message ?? 'Failed to create share.';
+                if (errEl) { errEl.textContent = msg; errEl.style.display = ''; }
+                return;
+            }
+
+            // 7. Show confirmation — email was dispatched server-side
+            const confirmEmailEl = document.getElementById('shareConfirmEmail');
+            if (confirmEmailEl) confirmEmailEl.textContent = recipientEmail;
+            document.getElementById('shareStep1').style.display = 'none';
+            document.getElementById('shareStep2').style.display = '';
+        } catch (err) {
+            console.error('Share error:', err);
+            vaultToast('Failed to create share.', 'error');
+        } finally {
+            if (submitBtn) submitBtn.disabled = false;
+        }
     }
 
     _initDetailModal() {
         const revealBtn = document.getElementById('detailRevealBtn');
         const copyBtn = document.getElementById('detailCopyBtn');
         const deleteBtn = document.getElementById('detailDeleteBtn');
+        const editBtn = document.getElementById('detailEditBtn');
+        const shareBtn = document.getElementById('detailShareBtn');
+        const submitShareBtn = document.getElementById('submitShareBtn');
 
         if (!revealBtn && !copyBtn && !deleteBtn) return;
+
+        editBtn?.addEventListener('click', () => {
+            if (!this.#activeCard) return;
+            VaultEdit.open(this.#activeCard);
+        });
 
         revealBtn?.addEventListener('click', async () => {
             if (!this.#activeCard) return;
@@ -453,7 +598,13 @@ class VaultDashboard {
 
         deleteBtn?.addEventListener('click', async () => {
             if (!this.#activeCard) return;
-            if (!confirm('Delete this vault entry?')) return;
+
+            const name = this.#activeCard.querySelector('.card-title')?.textContent?.trim()
+                || this.#activeCard.dataset.nickname
+                || '';
+
+            window.ModalSystem?.close('card-detail');
+            if (!await confirmDelete(name)) return;
 
             const id = this.#activeCard.dataset.entryId;
             try {
@@ -482,12 +633,236 @@ class VaultDashboard {
                 vaultToast('Error deleting entry', 'error');
             }
         });
+
+        shareBtn?.addEventListener('click', () => {
+            if (!this.#activeCard) return;
+            // Reset share modal state
+            document.getElementById('shareStep1').style.display = '';
+            document.getElementById('shareStep2').style.display = 'none';
+            const emailInput = document.getElementById('shareRecipientEmail');
+            if (emailInput) emailInput.value = '';
+            const errEl = document.getElementById('shareError');
+            if (errEl) errEl.style.display = 'none';
+
+            window.ModalSystem?.close('card-detail');
+            window.ModalSystem?.open('share-entry');
+        });
+
+        submitShareBtn?.addEventListener('click', () => this._handleShare());
     }
 }
+
+// ===== VAULT EDIT =====
+
+const VaultEdit = {
+    _card: null,
+
+    open(card) {
+        this._card = card;
+        this._reset();
+
+        document.getElementById('editNickname').value = card.dataset.nickname || '';
+        document.getElementById('editWebsite').value = card.dataset.website || '';
+        document.getElementById('editEmailHint').value = card.dataset.email || '';
+        document.getElementById('editNotes').value = card.dataset.notes || '';
+
+        window.ModalSystem?.close('card-detail');
+        window.ModalSystem?.open('edit-entry');
+        setTimeout(() => document.getElementById('editNickname').focus(), 100);
+    },
+
+    _reset() {
+        document.getElementById('editFormWrap').style.display = '';
+        document.getElementById('editSuccessWrap').style.display = 'none';
+        document.getElementById('editPasswordInputWrap').style.display = 'none';
+        document.getElementById('editPasswordPlaceholder').style.display = '';
+        document.getElementById('editTogglePasswordBtn').textContent = 'CHANGE';
+        document.getElementById('editNewPassword').value = '';
+        document.getElementById('editPasswordError').style.display = 'none';
+        document.getElementById('editGenericError').style.display = 'none';
+        const btn = document.getElementById('editSaveBtn');
+        if (btn) { btn.disabled = false; btn.textContent = 'SAVE CHANGES'; }
+    },
+
+    togglePasswordChange() {
+        const wrap = document.getElementById('editPasswordInputWrap');
+        const placeholder = document.getElementById('editPasswordPlaceholder');
+        const toggleBtn = document.getElementById('editTogglePasswordBtn');
+
+        if (wrap.style.display === 'none') {
+            wrap.style.display = '';
+            placeholder.style.display = 'none';
+            toggleBtn.textContent = 'KEEP CURRENT';
+            document.getElementById('editNewPassword').focus();
+        } else {
+            wrap.style.display = 'none';
+            placeholder.style.display = '';
+            toggleBtn.textContent = 'CHANGE';
+            document.getElementById('editNewPassword').value = '';
+            document.getElementById('editPasswordError').style.display = 'none';
+        }
+    },
+
+    cancel() {
+        window.ModalSystem?.close('edit-entry');
+        if (this._card) {
+            // Re-open detail modal showing current (unchanged) data
+            const card = this._card;
+            const iconEl = document.getElementById('detailIcon');
+            const titleEl = document.getElementById('detailTitle');
+            const websiteEl = document.getElementById('detailWebsite');
+            const emailEl = document.getElementById('detailEmail');
+            const notesEl = document.getElementById('detailNotes');
+            const notesField = document.getElementById('detailNotesField');
+            const dotsEl = document.getElementById('detailPasswordDots');
+            const revealBtn = document.getElementById('detailRevealBtn');
+
+            if (iconEl) iconEl.textContent = card.dataset.icon || 'lock';
+            if (titleEl) titleEl.textContent = card.dataset.nickname || card.dataset.website || 'Entry';
+            if (websiteEl) websiteEl.textContent = card.dataset.website || '';
+            if (emailEl) emailEl.textContent = card.dataset.email || '—';
+            const notes = card.dataset.notes || '';
+            if (notesEl) notesEl.textContent = notes || '—';
+            if (notesField) notesField.style.display = notes ? '' : 'none';
+            if (dotsEl) { dotsEl.textContent = '••••••••••••'; delete dotsEl.dataset.revealed; }
+            if (revealBtn) revealBtn.textContent = 'visibility';
+
+            window.ModalSystem?.open('card-detail');
+        }
+    },
+
+    done() {
+        window.ModalSystem?.close('edit-entry');
+        if (this._card) {
+            const card = this._card;
+            const iconEl = document.getElementById('detailIcon');
+            const titleEl = document.getElementById('detailTitle');
+            const websiteEl = document.getElementById('detailWebsite');
+            const emailEl = document.getElementById('detailEmail');
+            const notesEl = document.getElementById('detailNotes');
+            const notesField = document.getElementById('detailNotesField');
+            const dotsEl = document.getElementById('detailPasswordDots');
+            const revealBtn = document.getElementById('detailRevealBtn');
+
+            if (iconEl) iconEl.textContent = card.dataset.icon || 'lock';
+            if (titleEl) titleEl.textContent = card.dataset.nickname || card.dataset.website || 'Entry';
+            if (websiteEl) websiteEl.textContent = card.dataset.website || '';
+            if (emailEl) emailEl.textContent = card.dataset.email || '—';
+            const notes = card.dataset.notes || '';
+            if (notesEl) notesEl.textContent = notes || '—';
+            if (notesField) notesField.style.display = notes ? '' : 'none';
+            if (dotsEl) { dotsEl.textContent = '••••••••••••'; delete dotsEl.dataset.revealed; }
+            if (revealBtn) revealBtn.textContent = 'visibility';
+
+            window.ModalSystem?.open('card-detail');
+        }
+    },
+
+    async save() {
+        const nickname = document.getElementById('editNickname').value.trim();
+        const website = document.getElementById('editWebsite').value.trim();
+        const emailHint = document.getElementById('editEmailHint').value.trim();
+        const notes = document.getElementById('editNotes').value.trim();
+
+        const changingPassword = document.getElementById('editPasswordInputWrap').style.display !== 'none';
+        const newPassword = document.getElementById('editNewPassword').value;
+
+        document.getElementById('editPasswordError').style.display = 'none';
+        document.getElementById('editGenericError').style.display = 'none';
+
+        if (changingPassword && !newPassword) {
+            const errEl = document.getElementById('editPasswordError');
+            errEl.textContent = 'Enter a new password or keep the current one.';
+            errEl.style.display = '';
+            return;
+        }
+
+        const btn = document.getElementById('editSaveBtn');
+        btn.disabled = true;
+        btn.textContent = 'SAVING…';
+
+        const body = { nickname, website, email_hint: emailHint, notes };
+
+        if (changingPassword) {
+            try {
+                await window.vaultModal.demand();
+                const { ciphertext, iv } = await window.vaultCrypto.encrypt(newPassword);
+                body.encrypted_password = ciphertext;
+                body.iv = iv;
+            } catch (err) {
+                console.error('Encryption error:', err);
+                btn.disabled = false;
+                btn.textContent = 'SAVE CHANGES';
+                const errEl = document.getElementById('editGenericError');
+                errEl.textContent = 'Failed to encrypt. Make sure your vault is unlocked.';
+                errEl.style.display = '';
+                return;
+            }
+        }
+
+        const entryId = this._card?.dataset.entryId;
+
+        try {
+            const res = await fetch(`/vault/entries/${entryId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': getCsrfToken(),
+                    Accept: 'application/json',
+                },
+                body: JSON.stringify(body),
+            });
+
+            btn.disabled = false;
+            btn.textContent = 'SAVE CHANGES';
+
+            if (!res.ok) {
+                const data = await res.json().catch(() => ({}));
+                const errEl = document.getElementById('editGenericError');
+                errEl.textContent = data.message || 'Failed to save changes. Please try again.';
+                errEl.style.display = '';
+                return;
+            }
+
+            const { entry } = await res.json();
+
+            // Patch card dataset so all subsequent operations use fresh data
+            if (this._card) {
+                this._card.dataset.nickname = entry.nickname   ?? '';
+                this._card.dataset.website  = entry.website    ?? '';
+                this._card.dataset.email    = entry.email_hint ?? '';
+                this._card.dataset.notes    = entry.notes      ?? '';
+                if (body.encrypted_password) {
+                    this._card.dataset.encrypted = body.encrypted_password;
+                    this._card.dataset.iv        = body.iv;
+                }
+
+                // Patch visible card DOM
+                const titleEl = this._card.querySelector('h3');
+                if (titleEl) {
+                    titleEl.textContent = (entry.nickname || entry.website || 'ENTRY').toUpperCase();
+                }
+                const emailEl = this._card.querySelector('.email');
+                if (emailEl) emailEl.textContent = entry.email_hint || '';
+            }
+
+            document.getElementById('editFormWrap').style.display = 'none';
+            document.getElementById('editSuccessWrap').style.display = '';
+
+        } catch {
+            btn.disabled = false;
+            btn.textContent = 'SAVE CHANGES';
+            const errEl = document.getElementById('editGenericError');
+            errEl.textContent = 'Network error. Please try again.';
+            errEl.style.display = '';
+        }
+    },
+};
 
 // ===== MODULE INIT =====
 
 window.vaultCrypto = new VaultCrypto();
+window.VaultEdit = VaultEdit;
 
 document.addEventListener('DOMContentLoaded', () => {
     const modal = new VaultModal(window.vaultCrypto);
@@ -495,11 +870,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const dashboard = new VaultDashboard(window.vaultCrypto, modal);
     dashboard.init();
-
-    // Auto-demand unlock when vault cards are present
-    if (document.querySelectorAll('.vault-card').length > 0) {
-        modal.demand();
-    }
 
     // Lock vault on logout
     const logoutForm = document.querySelector('form[action*="logout"]');

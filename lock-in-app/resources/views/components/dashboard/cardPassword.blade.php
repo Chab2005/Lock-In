@@ -7,6 +7,7 @@
      data-nickname="{{ $entry->nickname ?? '' }}"
      data-website="{{ $entry->website ?? '' }}"
      data-email="{{ $entry->email_hint ?? '' }}"
+     data-notes="{{ $entry->notes ?? '' }}"
      role="button"
      tabindex="0"
      title="Click to view details">
@@ -17,9 +18,7 @@
             </div>
             <h3>{{ Str::upper($entry->nickname ?: ($entry->website ?: 'ENTRY')) }}</h3>
         </div>
-        <button class="vault-delete-btn" data-id="{{ $entry->id }}" title="Delete entry" type="button">
-            <span class="material-symbols-outlined">delete</span>
-        </button>
+
     </div>
     <div class="card-bottom">
         <p class="email">{{ $entry->email_hint }}</p>
